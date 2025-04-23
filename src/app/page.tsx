@@ -1,11 +1,117 @@
 'use client';
 
-import {useState} from 'react';
+import {useState, useCallback} from 'react';
 import {Button} from '@/components/ui/button';
 import {Textarea} from '@/components/ui/textarea';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
+import {cn} from '@/lib/utils';
+import {Check, ChevronDown} from 'lucide-react';
 import {generateLyrics} from '@/ai/flows/generate-lyrics';
+import {generateMusicPrompt} from '@/ai/flows/generate-music-prompt';
+
+const genresList = [
+  'Pop',
+  'Rock',
+  'Hip Hop',
+  'R&B',
+  'Country',
+  'Electronic',
+  'Classical',
+  'Jazz',
+  'Blues',
+  'Folk',
+  'Indie',
+  'Metal',
+  'Punk',
+  'Reggae',
+  'Ska',
+  'Funk',
+  'Disco',
+  'Soul',
+  'Gospel',
+  'Latin',
+];
+
+const moodsList = [
+  'Happy',
+  'Sad',
+  'Angry',
+  'Relaxed',
+  'Excited',
+  'Romantic',
+  'Melancholic',
+  'Energetic',
+  'Calm',
+  'Hopeful',
+  'Gloomy',
+  'Peaceful',
+  'Mysterious',
+  'Dreamy',
+  'Uplifting',
+  'Dark',
+  'Playful',
+  'Serious',
+  'Groovy',
+  'Intense',
+];
+
+interface ListProps {
+  items: string[];
+  selected: string[];
+  setSelected: (value: string[]) => void;
+}
+
+function List({items, selected, setSelected}: ListProps) {
+  const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+
+  const handleSelect = useCallback(
+    (item: string) => {
+      if (selected.includes(item)) {
+        setSelected(selected.filter((s) => s !== item));
+      } else {
+        setSelected([...selected, item]);
+      }
+    },
+    [selected, setSelected]
+  );
+
+  const filteredItems = items.filter((item) => item.toLowerCase().includes(searchValue.toLowerCase()));
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-[200px] justify-between"
+        >
+          {selected?.length > 0 ? selected.join(', ') : 'Select...'}
+          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        <input placeholder="Search items..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
+        <ul>
+          {filteredItems.map((item) => (
+            <li
+              key={item}
+              onClick={() => {
+                handleSelect(item);
+              }}
+            >
+              <Check className={cn('mr-2 h-4 w-4', selected.includes(item) ? 'opacity-100' : 'opacity-0')} />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 const systemInstruction = `You are an expert AI songwriter and musical prompt engineer. When given user specifications, you must check the top-line “Mode:” and then produce only what’s asked.
 Mode: (Full Song / Lyrics Only / Instrumentation Only)
@@ -19,6 +125,30 @@ export default function Home() {
   const [mode, setMode] = useState<'Full Song' | 'Lyrics Only' | 'Instrumentation Only'>('Full Song');
   const [response, setResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [genres, setGenres] = useState<string[]>([]);
+  const [moods, setMoods] = useState<string[]>([]);
+  const [theme, setTheme] = useState('');
+
+  const handleThemeGenerate = async () => {
+    setIsLoading(true);
+    try {
+      // Call generateMusicPrompt to get the theme based on selected genres and moods
+      const result = await generateMusicPrompt({
+        mode: 'Full Song', // Or any mode that returns musicPrompt
+        specifications: prompt, // Include any additional specifications
+        genres: genres,
+        moods: moods,
+      });
+
+      // Update the theme state with the generated music prompt
+      setTheme(result.musicPrompt || 'No theme generated.');
+    } catch (error: any) {
+      console.error('Error generating theme:', error);
+      setTheme(`Error: ${error.message || 'Failed to generate theme.'}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -55,12 +185,38 @@ export default function Home() {
               <SelectItem value="Instrumentation Only">Instrumentation Only</SelectItem>
             </SelectContent>
           </Select>
+
+          <div className="mb-4">
+            <List items={genresList} selected={genres} setSelected={setGenres} />
+          </div>
+
+          <div className="mb-4">
+            <List items={moodsList} selected={moods} setSelected={setMoods} />
+          </div>
+
+          <div className="mb-4 flex items-center space-x-2">
+            <Textarea
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              placeholder="Enter your theme here..."
+              className="text-base flex-grow"
+            />
+            <Button
+              onClick={handleThemeGenerate}
+              className="bg-accent text-accent-foreground hover:bg-accent/90"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Generating...' : 'Generate Theme'}
+            </Button>
+          </div>
+
           <Textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Enter your song specifications here..."
             className="mb-4 text-base"
           />
+
           <Button onClick={handleSubmit} className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
             {isLoading ? 'Generating...' : 'Generate'}
           </Button>
