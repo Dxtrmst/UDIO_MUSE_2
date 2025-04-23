@@ -234,15 +234,6 @@ export default function Home() {
           </CardContent>
         </Card>
       )}
-
-      <Card className="w-full max-w-md mt-8 bg-muted shadow-sm rounded-lg overflow-hidden">
-        <CardHeader className="py-3 px-4">
-          <CardTitle className="text-sm font-medium">System Instruction</CardTitle>
-        </CardHeader>
-        <CardContent className="p-4">
-          <p className="text-sm text-muted-foreground">{systemInstruction}</p>
-        </CardContent>
-      </Card>
     </div>
   );
 }
