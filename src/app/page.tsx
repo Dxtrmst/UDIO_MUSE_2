@@ -153,7 +153,7 @@ export default function Home() {
         moods: moods,
         theme: theme,
       });
-      setResponse(result ? JSON.stringify(result, null, 2) : 'No response received.');
+      setResponse(result ? JSON.stringify(result) : 'No response received.');
     } catch (error: any) {
       console.error('Error generating lyrics:', error);
       setResponse(`Error: ${error.message || 'Failed to generate response.'}`);
@@ -163,33 +163,21 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen py-8 bg-background">
-      <h1 className="text-2xl font-bold mb-4">Gemini Prompter</h1>
-      <Card className="w-full max-w-md bg-card shadow-md rounded-lg overflow-hidden">
-        <CardHeader className="py-3 px-4 bg-secondary">
-          <CardTitle className="text-lg font-semibold">Prompt Input</CardTitle>
-          <CardDescription>Enter your song specifications below</CardDescription>
-        </CardHeader>
-        <CardContent className="p-4">
-          <Select onValueChange={(value) => setMode(value as 'Full Song' | 'Lyrics Only' | 'Instrumentation Only')}>
-            <SelectTrigger className="w-full mb-4">
-              <SelectValue placeholder="Select Mode" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Full Song">Full Song</SelectItem>
-              <SelectItem value="Lyrics Only">Lyrics Only</SelectItem>
-              <SelectItem value="Instrumentation Only">Instrumentation Only</SelectItem>
-            </SelectContent>
-          </Select>
-
+    
+      
+        
           
-            <List items={genresList} selected={genres} setSelected={setGenres} />
           
-
+        
+        
           
-            <List items={moodsList} selected={moods} setSelected={setMoods} />
+            
+              
+            
+            
+              
+            
           
-
           
             <Textarea
               value={theme}
@@ -205,7 +193,6 @@ export default function Home() {
               {isLoading ? 'Generate...' : 'Generate Theme'}
             </Button>
           
-
           <Textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
@@ -214,22 +201,26 @@ export default function Home() {
           />
 
           <Button onClick={handleSubmit} className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
-            {isLoading ? 'Generate' : 'Submit'}
+            {isLoading ? 'Submit' : 'Submit'}
           </Button>
-        </CardContent>
-      </Card>
+        
+      
 
       {response && (
-        <Card className="w-full max-w-md bg-card shadow-md rounded-lg overflow-hidden mt-8">
-          <CardHeader className="py-3 px-4 bg-secondary">
-            <CardTitle className="text-lg font-semibold">AI Response</CardTitle>
-            <CardDescription>Here is the generated output from Gemini</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4">
-            <p className="text-base whitespace-pre-line">{response}</p>
-          </CardContent>
-        </Card>
+        
+          
+            
+              AI Response
+            
+            Here is the generated output from Gemini
+          
+          
+            
+              {response}
+            
+          
+        
       )}
-    </div>
+    
   );
 }
