@@ -153,13 +153,15 @@ export default function Home() {
 
       const formattedLyrics = result && result.lyrics ? formatLyrics(result.lyrics) : 'No response received.';
 
-      setResponse(
+      const finalResponse =
         `Mode: ${mode}\n` +
         `Genre: ${genres.join(', ')}\n` +
         `Mood: ${moods.join(', ')}\n` +
         `Theme: ${theme}\n` +
-        `LYRICS:\n${formattedLyrics}`
-      );
+        `LYRICS:\n${formattedLyrics}`;
+
+      setResponse(finalResponse);
+
     } catch (error: any) {
       console.error('Error generating lyrics:', error);
       setResponse(`Error: ${error.message || 'Failed to generate response.'}`);
@@ -184,56 +186,82 @@ export default function Home() {
 
 
   return (
-    
-      
-        
-          Gemini Prompter
-        
-        
-          Enter your song specifications below
-        
+    <div className="flex flex-col items-center justify-start min-h-screen py-8 bg-background">
+      <h1 className="text-2xl font-bold mb-4">Gemini Prompter</h1>
+      <Card className="w-full max-w-md bg-card shadow-md rounded-lg overflow-hidden">
+        <CardHeader className="py-3 px-4 bg-secondary">
+          <CardTitle className="text-lg font-semibold">Prompt Input</CardTitle>
+          <CardDescription>Enter your song specifications below</CardDescription>
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="grid gap-4">
+            <div>
+              <Select value={mode} onValueChange={(value) => setMode(value as 'Full Song' | 'Lyrics Only' | 'Instrumentation Only')}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select a mode" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Full Song">Full Song</SelectItem>
+                  <SelectItem value="Lyrics Only">Lyrics Only</SelectItem>
+                  <SelectItem value="Instrumentation Only">Instrumentation Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label>Genres</label>
+              <List items={genresList} selected={genres} setSelected={setGenres} />
+            </div>
+            <div>
+              <label>Moods</label>
+              <List items={moodsList} selected={moods} setSelected={setMoods} />
+            </div>
+            <div>
+              <Button
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+                disabled={isLoading}
+                onClick={handleThemeGenerate}
+              >
+                {isLoading ? 'Generating Theme...' : 'Generate Theme'}
+              </Button>
+              <Textarea
+                placeholder="Theme will be shown here..."
+                value={theme}
+                onChange={(e) => setTheme(e.target.value)}
+              />
+            </div>
+            <div>
+              <Textarea
+                placeholder="Enter additional song specifications here..."
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+              />
+            </div>
+          </div>
+        </CardContent>
         
           
-            
-              Select a mode
-            
-            
-              Full Song
-              Lyrics Only
-              Instrumentation Only
-            
+            {isLoading ? 'Generating...' : 'Generate!'}
           
-          
-          
-          
-          
-              {isLoading ? 'Generating Theme...' : 'Generate Theme'}
-            
-            
-              Enter your song specifications here...
-              {setTheme(e.target.value)}
-            />
-          
-          Enter additional song specifications here...
-           {setPrompt(e.target.value)}/>
         
-        
-          {isLoading ? 'Submit' : 'Submit'}
-        
-      
+      </Card>
 
       {response && (
-        
+        <Card className="w-full max-w-md mt-4 bg-card shadow-md rounded-lg overflow-hidden">
           
             
               AI Response
             
-            
-              {response}
-            
           
-        
+          
+            <CardContent className="p-4">
+              
+                {response}
+              
+            </CardContent>
+          
+        </Card>
       )}
-    
+    </div>
   );
 }
+
