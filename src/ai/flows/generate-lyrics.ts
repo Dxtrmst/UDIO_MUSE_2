@@ -44,12 +44,16 @@ const prompt = ai.definePrompt({
 
 Mode: {{{mode}}}
 
-{{#if (eq mode "Full Song")}}
+{{#if mode}}
+  {{#if (eq mode "Full Song")}}
 LYRICS: [Verse 1] – 4 lines  [Pre-Chorus] – 2 lines (omit if not requested)  [Chorus] – 4 lines, hook repeated twice  [Verse 2] – 4 lines  [Bridge] – 2 lines (optional)  [Chorus] – repeat or vary 1–2 keywords
-{{\else if (eq mode "Lyrics Only")}}
+  {{else}}
+    {{#if (eq mode "Lyrics Only")}}
 LYRICS: [Verse 1] – 4 lines  [Pre-Chorus] – 2 lines (omit if not requested)  [Chorus] – 4 lines, hook repeated twice  [Verse 2] – 4 lines  [Bridge] – 2 lines (optional)  [Chorus] – repeat or vary 1–2 keywords
-{{\else}}
+    {{else}}
 MUSIC PROMPT: (200–350 chars to fit Udio’s box) • Genres; Moods; Theme; Tempo; Core groove; Instrumentation; Production; Vocal tone • STOP WORDS: neon, echoes, {any music references}
+    {{/if}}
+  {{/if}}
 {{/if}}
 
 User specifications: {{{specifications}}}
