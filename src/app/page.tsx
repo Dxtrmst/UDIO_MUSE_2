@@ -182,15 +182,15 @@ export default function Home() {
             </SelectContent>
           </Select>
 
-          <div className="mb-4">
+          
             <List items={genresList} selected={genres} setSelected={setGenres} />
-          </div>
+          
 
-          <div className="mb-4">
+          
             <List items={moodsList} selected={moods} setSelected={setMoods} />
-          </div>
+          
 
-          <div className="mb-4 flex items-center space-x-2">
+          
             <Textarea
               value={theme}
               onChange={(e) => setTheme(e.target.value)}
@@ -202,9 +202,9 @@ export default function Home() {
               className="bg-accent text-accent-foreground hover:bg-accent/90"
               disabled={isLoading}
             >
-              {isLoading ? 'Generating...' : 'Generate Theme'}
+              {isLoading ? 'Generate...' : 'Generate Theme'}
             </Button>
-          </div>
+          
 
           <Textarea
             value={prompt}
@@ -214,13 +214,13 @@ export default function Home() {
           />
 
           <Button onClick={handleSubmit} className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
-            {isLoading ? 'Generate'}
+            {isLoading ? 'Generate' : 'Submit'}
           </Button>
         </CardContent>
       </Card>
 
       {response && (
-        <Card className="w-full max-w-md mt-8 bg-card shadow-md rounded-lg overflow-hidden">
+        <Card className="w-full max-w-md bg-card shadow-md rounded-lg overflow-hidden mt-8">
           <CardHeader className="py-3 px-4 bg-secondary">
             <CardTitle className="text-lg font-semibold">AI Response</CardTitle>
             <CardDescription>Here is the generated output from Gemini</CardDescription>
