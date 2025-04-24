@@ -158,7 +158,7 @@ export default function Home() {
         `Genre: ${genres.join(', ')}\n` +
         `Mood: ${moods.join(', ')}\n` +
         `Theme: ${theme}\n` +
-        `Lyrics:\n${formattedLyrics}`
+        `LYRICS:\n${formattedLyrics}`
       );
     } catch (error: any) {
       console.error('Error generating lyrics:', error);
@@ -184,62 +184,56 @@ export default function Home() {
 
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen py-8 bg-background">
-      <h1 className="text-2xl font-bold mb-4">Gemini Prompter</h1>
-      <Card className="w-full max-w-md bg-card shadow-md rounded-lg overflow-hidden">
-        <CardHeader className="py-3 px-4 bg-secondary">
-          <CardTitle className="text-lg font-semibold">Prompt Input</CardTitle>
-          <CardDescription>Enter your song specifications below</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 p-4">
-          <Select onValueChange={(value) => setMode(value as 'Full Song' | 'Lyrics Only' | 'Instrumentation Only')}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a mode" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Full Song">Full Song</SelectItem>
-              <SelectItem value="Lyrics Only">Lyrics Only</SelectItem>
-              <SelectItem value="Instrumentation Only">Instrumentation Only</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <List items={genresList} selected={genres} setSelected={setGenres} />
-          <List items={moodsList} selected={moods} setSelected={setMoods} />
-
-          <div className="flex items-center space-x-2">
-            <Button
-              className="bg-accent text-accent-foreground hover:bg-accent/90"
-              disabled={isLoading}
-              onClick={handleThemeGenerate}
-            >
+    
+      
+        
+          Gemini Prompter
+        
+        
+          Enter your song specifications below
+        
+        
+          
+            
+              Select a mode
+            
+            
+              Full Song
+              Lyrics Only
+              Instrumentation Only
+            
+          
+          
+          
+          
+          
               {isLoading ? 'Generating Theme...' : 'Generate Theme'}
-            </Button>
-            <Textarea
-              placeholder="Enter your song specifications here..."
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
+            
+            
+              Enter your song specifications here...
+              {setTheme(e.target.value)}
             />
-          </div>
-          <Textarea placeholder="Enter additional song specifications here..." value={prompt} onChange={(e) => setPrompt(e.target.value)}/>
-        </CardContent>
+          
+          Enter additional song specifications here...
+           {setPrompt(e.target.value)}/>
         
-          <Button onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? 'Submit' : 'Submit'}
-          </Button>
         
-      </Card>
+          {isLoading ? 'Submit' : 'Submit'}
+        
+      
 
       {response && (
-        <Card className="w-full max-w-md mt-4 bg-card shadow-md rounded-lg overflow-hidden">
-          <CardHeader className="py-3 px-4 bg-secondary">
-            <CardTitle className="text-lg font-semibold">AI Response</CardTitle>
-            <CardDescription>Here is the generated output from Gemini</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4">
-            {response}
-          </CardContent>
-        </Card>
+        
+          
+            
+              AI Response
+            
+            
+              {response}
+            
+          
+        
       )}
-    </div>
+    
   );
 }
