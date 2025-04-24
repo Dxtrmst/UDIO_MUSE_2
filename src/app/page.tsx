@@ -149,11 +149,17 @@ export default function Home() {
       const result = await generateLyrics({
         mode: mode,
         specifications: prompt,
-        genres: genres,
-        moods: moods,
-        theme: theme,
       });
-      setResponse(result ? result.lyrics : 'No response received.');
+
+      const formattedLyrics = result && result.lyrics ? formatLyrics(result.lyrics) : 'No response received.';
+
+      setResponse(
+        `Mode: ${mode}\n` +
+        `Genre: ${genres.join(', ')}\n` +
+        `Mood: ${moods.join(', ')}\n` +
+        `Theme: ${theme}\n` +
+        `Lyrics:\n${formattedLyrics}`
+      );
     } catch (error: any) {
       console.error('Error generating lyrics:', error);
       setResponse(`Error: ${error.message || 'Failed to generate response.'}`);
@@ -161,6 +167,21 @@ export default function Home() {
       setIsLoading(false);
     }
   };
+
+  const formatLyrics = (lyrics: string) => {
+    // Basic formatting - split by verse/chorus etc. and add line breaks
+    const sections = lyrics.split(/\[(.*?)\]/g);
+    let formattedLyrics = '';
+
+    for (let i = 1; i < sections.length; i += 2) {
+      const sectionType = sections[i];
+      const sectionContent = sections[i + 1] || '';
+      formattedLyrics += `[${sectionType}]\n${sectionContent.trim()}\n\n`;
+    }
+
+    return formattedLyrics.trim();
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen py-8 bg-background">
@@ -170,8 +191,8 @@ export default function Home() {
           <CardTitle className="text-lg font-semibold">Prompt Input</CardTitle>
           <CardDescription>Enter your song specifications below</CardDescription>
         </CardHeader>
-        <CardContent className="p-4">
-          <Select value={mode} onValueChange={(value) => setMode(value as 'Full Song' | 'Lyrics Only' | 'Instrumentation Only')}>
+        <CardContent className="space-y-4 p-4">
+          <Select onValueChange={(value) => setMode(value as 'Full Song' | 'Lyrics Only' | 'Instrumentation Only')}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a mode" />
             </SelectTrigger>
@@ -185,13 +206,7 @@ export default function Home() {
           <List items={genresList} selected={genres} setSelected={setGenres} />
           <List items={moodsList} selected={moods} setSelected={setMoods} />
 
-          <div className="flex items-center space-x-2 mb-4">
-            <Textarea
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-              placeholder="Enter your theme here..."
-              className="text-base flex-grow"
-            />
+          <div className="flex items-center space-x-2">
             <Button
               className="bg-accent text-accent-foreground hover:bg-accent/90"
               disabled={isLoading}
@@ -199,18 +214,19 @@ export default function Home() {
             >
               {isLoading ? 'Generating Theme...' : 'Generate Theme'}
             </Button>
+            <Textarea
+              placeholder="Enter your song specifications here..."
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+            />
           </div>
-          <Textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Enter your song specifications here..."
-            className="mb-4 text-base"
-          />
-
-          <Button onClick={handleSubmit} className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
+          <Textarea placeholder="Enter additional song specifications here..." value={prompt} onChange={(e) => setPrompt(e.target.value)}/>
+        </CardContent>
+        
+          <Button onClick={handleSubmit} disabled={isLoading}>
             {isLoading ? 'Submit' : 'Submit'}
           </Button>
-        </CardContent>
+        
       </Card>
 
       {response && (
