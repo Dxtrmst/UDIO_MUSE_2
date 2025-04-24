@@ -11,16 +11,15 @@ import {ai} from '@/ai/ai-instance';
 import {z} from 'genkit';
 
 const GenerateMusicPromptInputSchema = z.object({
-  mode: z.enum(['Full Song', 'Lyrics Only', 'Instrumentation Only']).describe('The mode for music generation (Full Song, Lyrics Only, Instrumentation Only).'),
-  specifications: z.string().describe('The user-provided specifications for the song.'),
+
   genres: z.array(z.string()).describe('The selected genres for the song.'),
   moods: z.array(z.string()).describe('The selected moods for the song.'),
 });
 export type GenerateMusicPromptInput = z.infer<typeof GenerateMusicPromptInputSchema>;
 
 const GenerateMusicPromptOutputSchema = z.object({
-  musicPrompt: z.string().describe('The generated music prompt (200-350 characters).').optional(),
-  lyrics: z.string().describe('The generated lyrics.').optional(),
+  musicPrompt: z.string().describe('The generated music theme.').optional(),
+
 });
 export type GenerateMusicPromptOutput = z.infer<typeof GenerateMusicPromptOutputSchema>;
 
@@ -32,31 +31,33 @@ const prompt = ai.definePrompt({
   name: 'generateMusicPromptPrompt',
   input: {
     schema: z.object({
-      mode: z.enum(['Full Song', 'Lyrics Only', 'Instrumentation Only']).describe('The mode for music generation (Full Song, Lyrics Only, Instrumentation Only).'),
-      specifications: z.string().describe('The user-provided specifications for the song.'),
       genres: z.array(z.string()).describe('The selected genres for the song.'),
       moods: z.array(z.string()).describe('The selected moods for the song.'),
     }),
   },
   output: {
     schema: z.object({
-      musicPrompt: z.string().describe('The generated music prompt (200-350 characters).').optional(),
-      lyrics: z.string().describe('The generated lyrics.').optional(),
+      musicPrompt: z.string().describe('The generated music theme.').optional(),    
     }),
   },
-  prompt: `You are an expert AI songwriter and musical prompt engineer. When given user specifications, you must check the top-line \"Mode:\" and then produce only what’s asked.
+  prompt: `You are an expert AI songwriter and musical theme engineer. Given the genres and moods, you must generate a song theme, strictly following the specified output format, including the headers and structure shown in the examples below.
 
-Mode: {{{mode}}}
+Genres: {{{genres}}}. Moods: {{{moods}}}
 
-A) If Mode is Full Song or Instrumentation Only:
-MUSIC PROMPT: (200–350 chars to fit Udio’s box)
-• Genres: {{{genres}}}; Moods: {{{moods}}}; Theme; Tempo; Core groove; Instrumentation; Production; Vocal tone
-• STOP WORDS: neon, echoes, {any music references}
 
-B) If Mode is Full Song or Lyrics Only:
-LYRICS: [Verse 1] – 4 lines  [Pre-Chorus] – 2 lines (omit if not requested)  [Chorus] – 4 lines, hook repeated twice  [Verse 2] – 4 lines  [Bridge] – 2 lines (optional)  [Chorus] – repeat or vary 1–2 keywords
+Produce ONLY the THEME section below, starting with 'THEME:' on a new line, followed by the content.
+THEME: (1-2 short sentences.)
 
-User specifications: {{{specifications}}}`,
+---
+
+EXAMPLES: --- Example 1 ---
+Genres: Neo-Soul, Contemporary R&B, Soul
+Moods: Exciting, Thrilling, Invigorating, Energetic, Lively.
+THEME: A journey of self-discovery, symbolized by finding a hidden forest waterfall. The song explores themes of wonder, energy, and the connection between nature and personal growth.
+
+---
+
+IMPORTANT: Ensure the output ONLY contains the requested section (THEME) with its header on separate lines, as demonstrated in the EXAMPLES section, and no conversational text or extra formatting outside of the generated content.`,
 });
 
 const generateMusicPromptFlow = ai.defineFlow<
@@ -69,12 +70,10 @@ const generateMusicPromptFlow = ai.defineFlow<
     outputSchema: GenerateMusicPromptOutputSchema,
   },
   async input => {
-    const {mode} = input;
-    const {output} = await prompt(input);
+    const {output} = await prompt({...input});
 
     return {
-      musicPrompt: (mode === 'Full Song' || mode === 'Instrumentation Only') ? output?.musicPrompt : undefined,
-      lyrics: (mode === 'Full Song' || mode === 'Lyrics Only') ? output?.lyrics : undefined,
+      musicPrompt: output?.musicPrompt,
     };
   }
 );

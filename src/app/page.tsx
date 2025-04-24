@@ -113,12 +113,7 @@ function List({items, selected, setSelected}: ListProps) {
   );
 }
 
-const systemInstruction = `You are an expert AI songwriter and musical prompt engineer. When given user specifications, you must check the top-line “Mode:” and then produce only what’s asked.
-Mode: (Full Song / Lyrics Only / Instrumentation Only)
-A) If Mode is Full Song or Instrumentation Only:
-MUSIC PROMPT: (200–350 chars to fit Udio’s box) • Genres; Moods; Theme; Tempo; Core groove; Instrumentation; Production; Vocal tone • STOP WORDS: neon, echoes, {any music references}
-B) If Mode is Full Song or Lyrics Only:
-LYRICS: [Verse 1] – 4 lines  [Pre-Chorus] – 2 lines (omit if not requested)  [Chorus] – 4 lines, hook repeated twice  [Verse 2] – 4 lines  [Bridge] – 2 lines (optional)  [Chorus] – repeat or vary 1–2 keywords`;
+
 
 export default function Home() {
   const [prompt, setPrompt] = useState('');
@@ -134,8 +129,6 @@ export default function Home() {
     try {
       // Call generateMusicPrompt to get the theme based on selected genres and moods
       const result = await generateMusicPrompt({
-        mode: 'Full Song', // Or any mode that returns musicPrompt
-        specifications: prompt, // Include any additional specifications
         genres: genres,
         moods: moods,
       });
@@ -156,8 +149,11 @@ export default function Home() {
       const result = await generateLyrics({
         mode: mode,
         specifications: prompt,
+        genres: genres,
+        moods: moods,
+        theme: theme,
       });
-      setResponse(result.lyrics || 'No response received.');
+      setResponse(result ? JSON.stringify(result, null, 2) : 'No response received.');
     } catch (error: any) {
       console.error('Error generating lyrics:', error);
       setResponse(`Error: ${error.message || 'Failed to generate response.'}`);
@@ -218,7 +214,7 @@ export default function Home() {
           />
 
           <Button onClick={handleSubmit} className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
-            {isLoading ? 'Generating...' : 'Generate'}
+            {isLoading ? 'Generate'}
           </Button>
         </CardContent>
       </Card>
