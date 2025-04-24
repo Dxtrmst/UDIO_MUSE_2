@@ -186,82 +186,80 @@ export default function Home() {
 
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen py-8 bg-background">
-      <h1 className="text-2xl font-bold mb-4">Gemini Prompter</h1>
-      <Card className="w-full max-w-md bg-card shadow-md rounded-lg overflow-hidden">
-        <CardHeader className="py-3 px-4 bg-secondary">
-          <CardTitle className="text-lg font-semibold">Prompt Input</CardTitle>
-          <CardDescription>Enter your song specifications below</CardDescription>
-        </CardHeader>
-        <CardContent className="p-4">
-          <div className="grid gap-4">
-            <div>
-              <Select value={mode} onValueChange={(value) => setMode(value as 'Full Song' | 'Lyrics Only' | 'Instrumentation Only')}>
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Select a mode" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Full Song">Full Song</SelectItem>
-                  <SelectItem value="Lyrics Only">Lyrics Only</SelectItem>
-                  <SelectItem value="Instrumentation Only">Instrumentation Only</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label>Genres</label>
-              <List items={genresList} selected={genres} setSelected={setGenres} />
-            </div>
-            <div>
-              <label>Moods</label>
-              <List items={moodsList} selected={moods} setSelected={setMoods} />
-            </div>
-            <div>
-              <Button
-                className="bg-accent text-accent-foreground hover:bg-accent/90"
-                disabled={isLoading}
-                onClick={handleThemeGenerate}
-              >
-                {isLoading ? 'Generating Theme...' : 'Generate Theme'}
-              </Button>
-              <Textarea
-                placeholder="Theme will be shown here..."
-                value={theme}
-                onChange={(e) => setTheme(e.target.value)}
-              />
-            </div>
-            <div>
-              <Textarea
-                placeholder="Enter additional song specifications here..."
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-              />
-            </div>
-          </div>
-        </CardContent>
+    
+      
+        Gemini Prompter
+      
+      
+        Enter your song specifications below
+      
+      
         
           
-            {isLoading ? 'Generating...' : 'Generate!'}
+            <Select value={mode} onValueChange={(value) => setMode(value as 'Full Song' | 'Lyrics Only' | 'Instrumentation Only')}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select a mode" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Full Song">Full Song</SelectItem>
+                <SelectItem value="Lyrics Only">Lyrics Only</SelectItem>
+                <SelectItem value="Instrumentation Only">Instrumentation Only</SelectItem>
+              </SelectContent>
+            </Select>
+          
+          
+            <label>Genres</label>
+            <List items={genresList} selected={genres} setSelected={setGenres} />
+          
+          
+            <label>Moods</label>
+            <List items={moodsList} selected={moods} setSelected={setMoods} />
+          
+          
+            <Button
+              className="bg-accent text-accent-foreground hover:bg-accent/90"
+              disabled={isLoading}
+                           onClick={handleThemeGenerate}
+            >
+              {isLoading ? 'Generating Theme...' : 'Generate Theme'}
+            </Button>
+            <Textarea
+              placeholder="Theme will be shown here..."
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+            />
+          
+          
+            <Textarea
+              placeholder="Enter additional song specifications here..."
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+            />
+          
+          
+            
+              
+                {isLoading ? 'Generating...' : 'Generate!'}
+              
+            
           
         
-      </Card>
+      
 
       {response && (
-        <Card className="w-full max-w-md mt-4 bg-card shadow-md rounded-lg overflow-hidden">
+        
           
             
               AI Response
             
           
           
-            <CardContent className="p-4">
-              
-                {response}
-              
-            </CardContent>
+            
+              {response}
+            
           
-        </Card>
+        
       )}
-    </div>
+    
   );
 }
-
