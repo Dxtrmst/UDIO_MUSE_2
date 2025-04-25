@@ -1,5 +1,5 @@
-# Firebase Studio
+# UDIO Muse 2.0
 
-This is a NextJS starter in Firebase Studio.
+This is an UDIO Music prompt helper to create music prompts specifically for Udio.
 
-To get started, take a look at src/app/page.tsx.
+This will require genre, mood and theme for the generating output.
